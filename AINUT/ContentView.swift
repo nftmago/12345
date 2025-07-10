@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var networkManager: NetworkManager
     @State private var selectedTab = 0
+    @State private var showOnboarding = !UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
     
     var body: some View {
         Group {
@@ -29,24 +30,34 @@ struct ContentView: View {
                         }
                         .tag(2)
                     
+                    StatsView()
+                        .tabItem {
+                            Image(systemName: "chart.bar.fill")
+                            Text("Stats")
+                        }
+                        .tag(3)
+                    
                     NutritionAdviceView()
                         .tabItem {
                             Image(systemName: "heart.fill")
                             Text("Advice")
                         }
-                        .tag(3)
+                        .tag(4)
                     
                     ProfileView()
                         .tabItem {
                             Image(systemName: "person.fill")
                             Text("Profile")
                         }
-                        .tag(4)
+                        .tag(5)
                 }
                 .accentColor(.green)
             } else {
                 AuthView()
             }
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(showOnboarding: $showOnboarding)
         }
         .onAppear {
             networkManager.checkAuthStatus()
